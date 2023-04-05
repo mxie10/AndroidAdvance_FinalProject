@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/drawable/add_photo_background.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/add_photo_foreground.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_circle_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/open_camera.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_cart.xml" value="0.1933876811594203" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.16394927536231885" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.14336372847011145" />

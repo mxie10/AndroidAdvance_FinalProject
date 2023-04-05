@@ -16,15 +16,32 @@
             android:layout_height="match_parent"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/openCamera_btn"
+        android:src="@drawable/open_camera"
+        app:tint="@color/white"
+        app:backgroundTint="#258FE3"
+        android:layout_margin="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/addImg_btn"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addImg_btn"
         android:src="@drawable/add_photo"
         app:tint="@color/white"
         app:backgroundTint="#258FE3"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="10dp"
+        android:layout_margin="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </RelativeLayout>
