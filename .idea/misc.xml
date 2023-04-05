@@ -4,6 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../../../layout/custom_preview.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/add_photo_background.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/add_photo_foreground.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_circle_24.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_cart.xml" value="0.1933876811594203" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.16394927536231885" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.14336372847011145" />
@@ -16,9 +19,12 @@
         <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/fragment_productdetaiils.xml" value="0.16394927536231885" />
         <entry key="app/src/main/res/layout/fragment_setting.xml" value="0.18562874251497005" />
+        <entry key="app/src/main/res/layout/item_image.xml" value="0.16983695652173914" />
         <entry key="app/src/main/res/layout/orderlist_item.xml" value="0.15020263424518743" />
         <entry key="app/src/main/res/layout/productlist_item.xml" value="0.1431159420289855" />
         <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.2296875" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/add_photo.xml" value="0.1" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/add_photo_round.xml" value="0.1375" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
       </map>
