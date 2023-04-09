@@ -1,17 +1,21 @@
 package com.example.firebase
 
+import ImagesAdapter
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
@@ -58,6 +62,25 @@ class HomeActivity: AppCompatActivity() {
         openCameraButton.setOnClickListener {
             openCamera()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean{
+        var intent = Intent(this@HomeActivity, MainActivity::class.java)
+
+        //user shared preference to store the data
+        val sharedPref: SharedPreferences = this.getSharedPreferences("MyPref", MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = sharedPref.edit()
+
+
+        if(item.itemId == R.id.logout){
+            startActivity(intent)
+        }
+        return true
     }
 
     private fun selectImagesFromGallery(){

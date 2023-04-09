@@ -1,16 +1,34 @@
-package com.example.firebase
-import android.media.Image
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.firebase.FullImageActivity
+import com.example.firebase.R
 
-class ImagesAdapter(private val imagesList: List<String>) : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
+class ImagesAdapter(
+    private val imagesList: List<String>,
+    private val onItemClickListener: ((String) -> Unit)? = null
+) : RecyclerView.Adapter<ImagesAdapter.ImageViewHolder>() {
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageView = itemView.findViewById(R.id.imageView)
+
+        fun bind(imageUrl: String, onItemClickListener: ((String) -> Unit)?) {
+            Glide.with(itemView.context)
+                .load(imageUrl)
+                .into(image)
+
+            // Set click listener
+            itemView.setOnClickListener {
+                val intent = Intent(itemView.context, FullImageActivity::class.java).apply {
+                    putExtra("image_url", imageUrl)
+                }
+                itemView.context.startActivity(intent)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
@@ -19,11 +37,9 @@ class ImagesAdapter(private val imagesList: List<String>) : RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        Glide.with(holder.itemView.context)
-            .load(imagesList[position])
-            .into(holder.image)
+        val imageUrl = imagesList[position]
+        holder.bind(imageUrl, onItemClickListener)
     }
 
     override fun getItemCount() = imagesList.size
-
 }

@@ -40,6 +40,10 @@
             android:exported="false"
             android:label="Camera Gallery" />
         <activity
+            android:name=".FullImageActivity"
+            android:exported="false"
+            android:label="review Image" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false"
             android:label="Sign up" />

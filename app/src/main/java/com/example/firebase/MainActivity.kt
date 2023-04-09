@@ -78,15 +78,3 @@ class MainActivity : AppCompatActivity() {
             }
         }
 }
-
-
-////**************
-//database = FirebaseDatabase.getInstance()
-//dbRef_prodduct = database.getReference("products")
-//val flowerId = dbRef_prodduct.push().key!!
-//val product = Flower(flowerId,"jasmine","6.99",5
-//)
-//dbRef_prodduct.child(flowerId).setValue(product).addOnCompleteListener{
-//}.addOnFailureListener{ err->
-//}
-////**************
