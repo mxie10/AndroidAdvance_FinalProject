@@ -17,7 +17,7 @@
         android:id="@+id/imageRegister_logo"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@drawable/app_flowers"
+        android:src="@drawable/memories"
         android:layout_gravity="center"
         />
     <LinearLayout

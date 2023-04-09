@@ -19,7 +19,7 @@
         android:id="@+id/imageView_logo"
         android:layout_width="180dp"
         android:layout_height="200dp"
-        android:src="@drawable/app_flowers"
+        android:src="@drawable/memories"
         android:layout_gravity="center"
         />
     <EditText

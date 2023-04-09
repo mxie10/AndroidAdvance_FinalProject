@@ -34,13 +34,13 @@ class MainActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
         dbRef = database.getReference("products")
         auth = Firebase.auth
-        val imageView: ImageView = findViewById(R.id.imageView_logo)
-        CoroutineScope(Dispatchers.IO).launch {
-            val bitmap = getBitmap()
-            withContext(Dispatchers.Main) {
-                imageView.setImageBitmap(bitmap)
-            }
-        }
+//        val imageView: ImageView = findViewById(R.id.imageView_logo)
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val bitmap = getBitmap()
+//            withContext(Dispatchers.Main) {
+//                imageView.setImageBitmap(bitmap)
+//            }
+//        }
     }
 
         fun getBitmap(): Bitmap? {
