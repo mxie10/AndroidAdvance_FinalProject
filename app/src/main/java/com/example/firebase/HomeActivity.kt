@@ -11,19 +11,20 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
-import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.io.File
-import java.io.FileOutputStream
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -36,21 +37,31 @@ class HomeActivity: AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ImagesAdapter
     private lateinit var layoutManager: GridLayoutManager
-    private lateinit var imagesList:ArrayList<String>
+    private lateinit var imagesList: ArrayList<String>
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
     val photoFileName = "IMG_${timeStamp}.jpg"
 
+    // Initialize Firebase Realtime Database
+    private lateinit var firebaseDatabase: FirebaseDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         context = this@HomeActivity
 
+        // Initialize Firebase
+        FirebaseApp.initializeApp(this)
+        firebaseDatabase = FirebaseDatabase.getInstance()
+
         imagesList = ArrayList()
         recyclerView = findViewById(R.id.recyclerView)
-        layoutManager = GridLayoutManager(this,2)
-        adapter = ImagesAdapter(imagesList)
+        layoutManager = GridLayoutManager(this, 2)
+        adapter = ImagesAdapter(imagesList) { position ->
+            val imageUrl = imagesList[position]
+            deleteImageUrlFromFirebase(imageUrl)
+        }
         recyclerView.layoutManager = layoutManager
-        recyclerView.adapter=adapter
+        recyclerView.adapter = adapter
+        fetchImageUrlsFromFirebase()
 
         val selectImagesButton = findViewById<FloatingActionButton>(R.id.addImg_btn)
         val openCameraButton = findViewById<FloatingActionButton>(R.id.openCamera_btn)
@@ -62,8 +73,8 @@ class HomeActivity: AppCompatActivity() {
         openCameraButton.setOnClickListener {
             openCamera()
         }
-    }
 
+    }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
         return true
@@ -98,19 +109,21 @@ class HomeActivity: AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(requestCode == PICK_IMAGES_REQUEST_CODE && resultCode == RESULT_OK && data!=null){
-            if(data.clipData != null) {
-                for(i in 0  until data.clipData!!.itemCount){
+        if (requestCode == PICK_IMAGES_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
+            if (data.clipData != null) {
+                for (i in 0 until data.clipData!!.itemCount) {
                     val imageUri = data.clipData!!.getItemAt(i).uri.toString()
                     imagesList.add(imageUri)
+                   uploadImageUrlToFirebase(imageUri)
                 }
-            }else{
+            } else {
                 val imageUri = data.data.toString()
                 imagesList.add(imageUri)
+                uploadImageUrlToFirebase(imageUri)
             }
-            sendNotification("Add image","Success")
+            sendNotification("Add image", "Success")
             adapter.notifyDataSetChanged()
-        }else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val imageFileName = "JPEG_" + timeStamp + ".jpg"
@@ -125,12 +138,22 @@ class HomeActivity: AppCompatActivity() {
             resolver.openOutputStream(imageUri!!).use { outputStream ->
                 imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
             }
-            sendNotification("Add image","Success")
+            sendNotification("Add image", "Success")
+
+            // Add the following line after saving the image to the Photos gallery
+            val imageUriString = imageUri.toString()
+           // uploadImageUrlToFirebase(imageUriString)
         }
     }
 
-    fun sendNotification(title:String,content:String){
-        Log.v("sendNotification","in??")
+    private fun uploadImageUrlToFirebase(imageUrl: String) {
+        val key = firebaseDatabase.reference.child("images").push().key
+        key?.let {
+            firebaseDatabase.reference.child("images").child(it).setValue(imageUrl)
+        }
+    }
+    fun sendNotification(title: String, content: String) {
+        Log.v("sendNotification", "in??")
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -148,5 +171,47 @@ class HomeActivity: AppCompatActivity() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         notificationManager.notify(1, builder.build())
+    }
+
+    private fun fetchImageUrlsFromFirebase() {
+        val imagesRef = firebaseDatabase.reference.child("images")
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                imagesList.clear()
+                for (childSnapshot in dataSnapshot.children) {
+                    val imageUrl = childSnapshot.getValue(String::class.java)
+                    imageUrl?.let {
+                        imagesList.add(it)
+                    }
+                }
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w("HomeActivity", "fetchImageUrlsFromFirebase:onCancelled", databaseError.toException())
+            }
+        }
+        imagesRef.addValueEventListener(valueEventListener)
+    }
+
+    // Add a new function to delete the image URL from Firebase
+    private fun deleteImageUrlFromFirebase(imageUrl: String) {
+        val imagesRef = firebaseDatabase.reference.child("images")
+        val valueEventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (childSnapshot in dataSnapshot.children) {
+                    val storedImageUrl = childSnapshot.getValue(String::class.java)
+                    if (storedImageUrl == imageUrl) {
+                        childSnapshot.ref.removeValue()
+                        break
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.w("HomeActivity", "deleteImageUrlFromFirebase:onCancelled", databaseError.toException())
+            }
+        }
+        imagesRef.addListenerForSingleValueEvent(valueEventListener)
     }
 }
